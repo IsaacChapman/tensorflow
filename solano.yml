@@ -9,12 +9,15 @@ hooks:
   # Pull latest TensorFlow docker image (dependent images will be cached by default)
   pre_setup: sudo docker pull gcr.io/tensorflow/tensorflow:latest
 
+timeout: 5400 # Default timeout is 900 seconds
+
 tests:
   - |
+    set -o errexit -o pipefail # Exit on error
     # Run "quick" self test before running longer test and attach outputs separately to test
-    sudo docker run -it gcr.io/tensorflow/tensorflow:latest \
+    sudo docker run gcr.io/tensorflow/tensorflow:latest \
       python -m tensorflow.models.image.mnist.convolutional --self_test \
       | tee $HOME/results/$TDDIUM_SESSION_ID/$TDDIUM_TEST_EXEC_ID/self_test.txt
-    sudo docker run -it gcr.io/tensorflow/tensorflow:latest \
+    sudo docker run gcr.io/tensorflow/tensorflow:latest \
       python -m tensorflow.models.image.mnist.convolutional \
       | tee $HOME/results/$TDDIUM_SESSION_ID/$TDDIUM_TEST_EXEC_ID/full_test.txt
